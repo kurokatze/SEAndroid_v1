@@ -1,0 +1,283 @@
+#
+# System Server aka system_server spawned by zygote.
+# Most of the framework services run in this process.
+#
+type system_server, domain, mlstrustedsubject;
+
+# Define a type for tmpfs-backed ashmem regions.
+tmpfs_domain(system_server)
+
+# Dalvik Compiler JIT Mapping.
+allow system_server self:process execmem;
+allow system_server ashmem_device:chr_file execute;
+allow system_server system_server_tmpfs:file execute;
+
+# For art.
+allow system_server dalvikcache_data_file:file execute;
+
+# ptrace to processes in the same domain for debugging crashes.
+allow system_server self:process ptrace;
+
+# Child of the zygote.
+allow system_server zygote:fd use;
+allow system_server zygote:process sigchld;
+allow system_server zygote_tmpfs:file read;
+
+# May kill zygote on crashes.
+allow system_server zygote:process sigkill;
+
+# Read /system/bin/app_process.
+allow system_server zygote_exec:file r_file_perms;
+
+# Needed to close the zygote socket, which involves getopt / getattr
+allow system_server zygote:unix_stream_socket { getopt getattr };
+
+# system server gets network and bluetooth permissions.
+net_domain(system_server)
+bluetooth_domain(system_server)
+
+# These are the capabilities assigned by the zygote to the
+# system server.
+allow system_server self:capability {
+    kill
+    net_admin
+    net_bind_service
+    net_broadcast
+    net_raw
+    sys_boot
+    sys_module
+    sys_nice
+    sys_resource
+    sys_time
+    sys_tty_config
+};
+
+allow system_server self:capability2 block_suspend;
+
+# Triggered by /proc/pid accesses, not allowed.
+dontaudit system_server self:capability sys_ptrace;
+
+# Trigger module auto-load.
+allow system_server kernel:system module_request;
+
+# Use netlink uevent sockets.
+allow system_server self:netlink_kobject_uevent_socket create_socket_perms;
+
+# Use generic netlink sockets.
+allow system_server self:netlink_socket create_socket_perms;
+
+# Kill apps.
+allow system_server appdomain:process { sigkill signal };
+
+# Set scheduling info for apps.
+allow system_server appdomain:process { getsched setsched };
+allow system_server mediaserver:process { getsched setsched };
+
+# Read /proc/pid data for apps.
+r_dir_file(system_server, appdomain)
+
+# Write to /proc/pid/oom_adj_score for apps.
+allow system_server appdomain:file write;
+
+# Silently deny access to any /proc/pid files other than
+# the ones allowed via allow rule.  Avoids filling the logs
+# with noise from /proc/pid traversals by ActivityManager,
+# CpuTracker, and possibly other system_server components.
+dontaudit system_server domain:dir r_dir_perms;
+dontaudit system_server domain:{ file lnk_file } r_file_perms;
+
+# Read/Write to /proc/net/xt_qtaguid/ctrl and and /dev/xt_qtaguid.
+allow system_server qtaguid_proc:file rw_file_perms;
+allow system_server qtaguid_device:chr_file rw_file_perms;
+
+# Write to /proc/sysrq-trigger.
+allow system_server proc_sysrq:file rw_file_perms;
+
+# Read /sys/kernel/debug/wakeup_sources.
+allow system_server debugfs:file r_file_perms;
+
+# WifiWatchdog uses a packet_socket
+allow system_server self:packet_socket create_socket_perms;
+
+# 3rd party VPN clients require a tun_socket to be created
+allow system_server self:tun_socket create_socket_perms;
+
+# Notify init of death.
+allow system_server init:process sigchld;
+
+# Talk to init and various daemons via sockets.
+unix_socket_connect(system_server, property, init)
+unix_socket_connect(system_server, installd, installd)
+unix_socket_connect(system_server, lmkd, lmkd)
+unix_socket_connect(system_server, mtpd, mtp)
+unix_socket_connect(system_server, netd, netd)
+unix_socket_connect(system_server, vold, vold)
+unix_socket_connect(system_server, zygote, zygote)
+unix_socket_connect(system_server, gps, gpsd)
+unix_socket_connect(system_server, racoon, racoon)
+unix_socket_send(system_server, wpa, wpa)
+
+# Communicate over a socket created by surfaceflinger.
+allow system_server surfaceflinger:unix_stream_socket { read write setopt };
+
+# Perform Binder IPC.
+binder_use(system_server)
+binder_call(system_server, binderservicedomain)
+binder_call(system_server, appdomain)
+binder_call(system_server, dumpstate)
+binder_service(system_server)
+
+# Read /proc/pid files for dumping stack traces of native processes.
+r_dir_file(system_server, mediaserver)
+r_dir_file(system_server, sdcardd)
+r_dir_file(system_server, surfaceflinger)
+r_dir_file(system_server, inputflinger)
+
+# Use sockets received over binder from various services.
+allow system_server mediaserver:tcp_socket rw_socket_perms;
+allow system_server mediaserver:udp_socket rw_socket_perms;
+
+# Check SELinux permissions.
+selinux_check_access(system_server)
+
+# XXX Label sysfs files with a specific type?
+allow system_server sysfs:file rw_file_perms;
+allow system_server sysfs_nfc_power_writable:file rw_file_perms;
+
+# Access devices.
+allow system_server device:dir r_dir_perms;
+allow system_server mdns_socket:sock_file rw_file_perms;
+allow system_server alarm_device:chr_file rw_file_perms;
+allow system_server gpu_device:chr_file rw_file_perms;
+allow system_server graphics_device:dir search;
+allow system_server graphics_device:chr_file rw_file_perms;
+allow system_server iio_device:chr_file rw_file_perms;
+allow system_server input_device:dir r_dir_perms;
+allow system_server input_device:chr_file rw_file_perms;
+allow system_server radio_device:chr_file r_file_perms;
+allow system_server tty_device:chr_file rw_file_perms;
+allow system_server urandom_device:chr_file rw_file_perms;
+allow system_server usbaccessory_device:chr_file rw_file_perms;
+allow system_server video_device:dir r_dir_perms;
+allow system_server video_device:chr_file rw_file_perms;
+allow system_server adbd_socket:sock_file rw_file_perms;
+
+# tun device used for 3rd party vpn apps
+allow system_server tun_device:chr_file rw_file_perms;
+
+# Manage data files.
+allow system_server data_file_type:dir create_dir_perms;
+allow system_server data_file_type:notdevfile_class_set create_file_perms;
+
+# Read /file_contexts and /data/security/file_contexts
+security_access_policy(system_server)
+
+# Relabel apk files.
+relabelto_domain(system_server)
+allow system_server { apk_tmp_file apk_private_tmp_file }:file { relabelfrom relabelto };
+allow system_server { apk_data_file apk_private_data_file }:file { relabelfrom relabelto };
+
+# Relabel wallpaper.
+allow system_server system_data_file:file relabelfrom;
+allow system_server wallpaper_file:file relabelto;
+allow system_server wallpaper_file:file { rw_file_perms unlink };
+
+# Relabel /data/anr.
+allow system_server system_data_file:dir relabelfrom;
+allow system_server anr_data_file:dir relabelto;
+
+# Property Service write
+allow system_server system_prop:property_service set;
+allow system_server radio_prop:property_service set;
+allow system_server debug_prop:property_service set;
+allow system_server powerctl_prop:property_service set;
+
+# ctl interface
+allow system_server ctl_default_prop:property_service set;
+allow system_server ctl_bugreport_prop:property_service set;
+
+# Create a socket for receiving info from wpa.
+type_transition system_server wifi_data_file:sock_file system_wpa_socket;
+type_transition system_server wpa_socket:sock_file system_wpa_socket;
+allow system_server wpa_socket:dir rw_dir_perms;
+allow system_server system_wpa_socket:sock_file create_file_perms;
+
+# Remove sockets created by wpa_supplicant
+allow system_server wpa_socket:sock_file unlink;
+
+# Create a socket for connections from debuggerd.
+type_transition system_server system_data_file:sock_file system_ndebug_socket "ndebugsocket";
+allow system_server system_ndebug_socket:sock_file create_file_perms;
+
+# Specify any arguments to zygote.
+allow system_server self:zygote { specifyids specifyrlimits specifyseinfo };
+
+# Manage cache files.
+allow system_server cache_file:dir { relabelfrom create_dir_perms };
+allow system_server cache_file:file { relabelfrom create_file_perms };
+
+# Run system programs, e.g. dexopt.
+allow system_server system_file:file x_file_perms;
+
+# LocationManager(e.g, GPS) needs to read and write
+# to uart driver and ctrl proc entry
+allow system_server gps_device:chr_file rw_file_perms;
+allow system_server gps_control:file rw_file_perms;
+
+# Allow system_server to use app-created sockets and pipes.
+allow system_server appdomain:{ tcp_socket udp_socket } { getattr getopt setopt read write shutdown };
+allow system_server appdomain:fifo_file { getattr read write };
+
+# Allow abstract socket connection
+allow system_server rild:unix_stream_socket connectto;
+
+# BackupManagerService lets PMS create a data backup file
+allow system_server cache_backup_file:file create_file_perms;
+# Relabel /data/backup
+allow system_server backup_data_file:dir { relabelto relabelfrom };
+# Relabel /cache/.*\.{data|restore}
+allow system_server cache_backup_file:file { relabelto relabelfrom };
+# LocalTransport creates and relabels /cache/backup
+allow system_server cache_backup_file:dir { relabelto relabelfrom create_dir_perms };
+
+# Allow system to talk to usb device
+allow system_server usb_device:chr_file rw_file_perms;
+allow system_server usb_device:dir r_dir_perms;
+
+# Allow system to talk to sensors
+allow system_server sensors_device:chr_file rw_file_perms;
+
+# Read from HW RNG (needed by EntropyMixer).
+allow system_server hw_random_device:chr_file r_file_perms;
+
+# Access to wake locks
+allow system_server sysfs_wake_lock:file rw_file_perms;
+
+# Read and delete files under /dev/fscklogs.
+r_dir_file(system_server, fscklogs)
+allow system_server fscklogs:dir { write remove_name };
+allow system_server fscklogs:file unlink;
+
+# For SELinuxPolicyInstallReceiver
+selinux_manage_policy(system_server)
+
+# logd access, system_server inherit logd write socket
+# (urge is to deprecate this long term)
+allow system_server zygote:unix_dgram_socket write;
+
+# Read from log daemon.
+read_logd(system_server)
+
+# Be consistent with DAC permissions. Allow system_server to write to
+# /sys/module/lowmemorykiller/parameters/adj
+# /sys/module/lowmemorykiller/parameters/minfree
+allow system_server sysfs_lowmemorykiller:file { getattr w_file_perms };
+
+###
+### Neverallow rules
+###
+### system_server should NEVER do any of this
+
+# Do not allow accessing SDcard files as unsafe ejection could
+# cause the kernel to kill the system_server.
+# neverallow system_server sdcard_type:file rw_file_perms;

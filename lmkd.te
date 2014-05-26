@@ -1,0 +1,20 @@
+# lmkd low memory killer daemon
+type lmkd, domain;
+type lmkd_exec, exec_type, file_type;
+
+init_daemon_domain(lmkd)
+
+allow lmkd self:capability { dac_override sys_resource kill };
+
+## Open and write to /proc/PID/oom_score_adj
+## TODO: maybe scope this down?
+r_dir_file(lmkd, appdomain)
+allow lmkd appdomain:file write;
+r_dir_file(lmkd, system_server)
+allow lmkd system_server:file write;
+
+## Writes to /sys/module/lowmemorykiller/parameters/minfree
+allow lmkd sysfs_lowmemorykiller:file w_file_perms;
+
+# Send kill signals
+allow lmkd appdomain:process sigkill;

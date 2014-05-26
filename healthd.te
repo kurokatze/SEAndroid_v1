@@ -1,0 +1,34 @@
+# healthd seclabel is specified in init.rc since
+# it lives in the rootfs and has no unique file type.
+type healthd, domain;
+
+allow healthd rootfs:file { read entrypoint };
+write_klog(healthd)
+# /dev/__null__ created by init prior to policy load,
+# open fd inherited by healthd.
+allow healthd tmpfs:chr_file { read write };
+
+allow healthd self:capability { net_admin mknod sys_tty_config };
+allow healthd self:capability2 block_suspend;
+allow healthd self:netlink_kobject_uevent_socket create_socket_perms;
+binder_use(healthd)
+binder_service(healthd)
+binder_call(healthd, system_server)
+
+# Write to state file.
+# TODO:  Split into a separate type?
+allow healthd sysfs:file write;
+
+###
+### healthd: charger mode
+###
+
+allow healthd graphics_device:dir r_dir_perms;
+allow healthd graphics_device:chr_file rw_file_perms;
+allow healthd input_device:dir r_dir_perms;
+allow healthd input_device:chr_file r_file_perms;
+allow healthd tty_device:chr_file rw_file_perms;
+allow healthd ashmem_device:chr_file execute;
+allow healthd self:process execmem;
+allow healthd proc_sysrq:file rw_file_perms;
+allow healthd self:capability sys_boot;

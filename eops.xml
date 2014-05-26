@@ -1,0 +1,97 @@
+<?xml version="1.0"?>
+<!--
+
+ eops (enterprise operations) is a security extension to the App Operations (AppOps)
+ feature already present on Android 4.3+ devices. AppOps lets users fine tune certain
+ functionality requested by apps by allowing the user to toggle these access rights. eops
+ seeks to provide an extension whereby a harcoded set of rules explicitly denies certain access
+ rights to groups of installed apps. This feature will allow an enterprise like control
+ over certain operations. eops is not a frontend for SELinux which somehow ties app
+ permissions to SELinux contexts. Rather, it is an extension of the middleware mac (MMAC)
+ controls that currently exist on Android 4.3+ devices. eops uses the seinfo labels that
+ are already assigned to apps upon install.
+
+ Listed below is a set of viable op tag names taken from the AppOpsManager.java file. This
+ list is just a string version of each of the operation switches from that file and
+ represent the possible ops that can be restricted.
+
+            "COARSE_LOCATION",        ->   Works for WIFI_SCAN, COARSE|FINE_LOCATION, NEIGHBORING_CELLS
+            "VIBRATE",                ->   Known NOT to work
+            "READ_CONTACTS",          ->   Works for some, fc others (needs fake data)
+            "WRITE_CONTACTS",         ->   Works for some, fc others (needs fake data)
+            "READ_CALL_LOG",          ->
+            "WRITE_CALL_LOG",         ->
+            "READ_CALENDAR",          ->   Works for some, fc others (needs fake data)
+            "WRITE_CALENDAR",         ->   Works for some, fc others (needs fake data)
+            "POST_NOTIFICATION",      ->   Works for some (platform?)
+            "CALL_PHONE",             ->
+            "READ_SMS",               ->
+            "WRITE_SMS",              ->
+            "WRITE_SETTINGS",         ->   Works
+            "SYSTEM_ALERT_WINDOW",    ->   Appears to work
+            "ACCESS_NOTIFICATIONS",   ->   Appears to work
+            "CAMERA",                 ->   Works
+            "RECORD_AUDIO",           ->   Known NOT to work
+            "PLAY_AUDIO",             ->   Known NOT to work
+            "READ_CLIPBOARD",         ->   Works
+            "WRITE_CLIPBOARD"         ->   Works
+
+ All operations listed in the policy will have a mode of ignored. This means that empty data
+ sets are returned to the caller when an operation is requested. This shadow data will then allow
+ certain apps to presumably still operate. However, AOSP currently is not constructed to return these
+ empty data sets and therefore acts as if ignored operations are completely denied (blocked). Because
+ of this some apps might crash or behave oddly if you apply certain eops policy. In addition,
+ while AOSP seems to have hooked the proper places to check operations against policy
+ some of those hooks fail to follow through with the denial and still allow the operation to
+ occur. Because of this, eops will also fail to make those distinctions and likewise fail
+ to enforce certain operations. Once the AOSP pieces are in place to return legitimate fake
+ data and enforce all operations then of course eops, by its design, will also do the same.
+ So, as long as AppOps is beta so too will eops.
+
+ A typical eops policy looks like the following.
+
+ <app-ops>
+
+   <seinfo name="default">
+     <op name="CAMERA"/>
+     <op name="CALL_PHONE"/>
+   </seinfo>
+
+   <seinfo name="media">
+     <op name="CAMERA"/>
+   </seinfo>
+
+ </app-ops>
+
+ Each stanza is grouped according to the seinfo tag that is assigned during install and
+ thus creates a dependency with the mac_permissions.xml file. Each seinfo tag can then
+ include any number of op tags. By including the op(s) you are simply removing that operation
+ from working for all apps that have been installed with the listed seinfo label. These
+ operations are restricted regardless of what any user controlled app ops policy may say.
+ Any op not listed is therefore still subject to user control as normal. Lastly, there is
+ no permissive mode for eops. Once a policy is in place all ops listed are enforced.
+
+ ** Some things to still pursue with this code:
+  - AppOpsService.java seems to deal with the shell and root processes in some fashion. Think
+    about ways to include this into our policy.
+  - Potential ways to speed up the code when combining the eops and app ops policies.
+  - Cache the results of eops somehow.
+  - Runtime ability to change eops policy.
+  - build a test harness for this stuff
+
+-->
+
+<app-ops>
+
+<!--
+   <seinfo name="default">
+     <op name="CAMERA"/>
+     <op name="CALL_PHONE"/>
+   </seinfo>
+
+   <seinfo name="media">
+     <op name="CAMERA"/>
+   </seinfo>
+-->
+
+</app-ops>

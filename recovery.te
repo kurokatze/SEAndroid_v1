@@ -1,0 +1,22 @@
+# recovery console (used in recovery init.rc for /sbin/recovery)
+type recovery, domain;
+allow recovery rootfs:file entrypoint;
+unconfined_domain(recovery)
+relabelto_domain(recovery)
+
+allow recovery self:capability2 mac_admin;
+
+allow recovery {fs_type dev_type -kmem_device file_type}:dir_file_class_set relabelto;
+allow recovery unlabeled:filesystem mount;
+allow recovery fs_type:filesystem *;
+
+# Required to e.g. wipe userdata/cache.
+allow recovery dev_type:blk_file rw_file_perms;
+
+allow recovery self:process execmem;
+allow recovery ashmem_device:chr_file execute;
+allow recovery tmpfs:file rx_file_perms;
+
+## TODO: Investigate whether it is safe to remove these
+allow recovery self:capability { sys_rawio mknod };
+auditallow recovery self:capability { sys_rawio mknod };
