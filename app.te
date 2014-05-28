@@ -51,8 +51,8 @@ allow appdomain surfaceflinger:unix_stream_socket { read write setopt getattr ge
 # allow appdomain app_data_file:dir create_dir_perms;
 # allow appdomain app_data_file:notdevfile_class_set create_file_perms;
 ###############################
-allow appdomain app_data_file_type:dir create_dir_perms;
-allow appdomain app_data_file_type:notdevfile_class_set create_file_perms;
+# allow appdomain app_data_file_type:dir create_dir_perms;
+# allow appdomain app_data_file_type:notdevfile_class_set create_file_perms;
 ############# END #############
 
 # lib subdirectory of /data/data dir is system-owned.

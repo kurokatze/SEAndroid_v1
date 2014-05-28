@@ -29,7 +29,7 @@ bluetooth_domain(untrusted_app)
 # to their sandbox directory and then execute.
 ### START
 # allow untrusted_app app_data_file:file rx_file_perms;
-allow untrusted_app app_data_file_type:file rx_file_perms;
+allow untrusted_app untrusted_app_data_file:file rx_file_perms;
 ### END
 
 allow untrusted_app tun_device:chr_file rw_file_perms;

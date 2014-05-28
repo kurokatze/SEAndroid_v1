@@ -5,6 +5,7 @@
 type shared_app, domain;
 app_domain(shared_app)
 platform_app_domain(shared_app)
+privileged_app_domain(shared_app)
 # Access the network.
 net_domain(shared_app)
 # Access bluetooth.

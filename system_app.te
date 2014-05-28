@@ -5,6 +5,7 @@
 #
 type system_app, domain;
 app_domain(system_app)
+privileged_app_domain(system_app)
 net_domain(system_app)
 binder_service(system_app)
 

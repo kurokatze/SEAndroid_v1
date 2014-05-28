@@ -5,6 +5,7 @@
 type platform_app, domain;
 app_domain(platform_app)
 platform_app_domain(platform_app)
+privileged_app_domain(platform_app)
 # Access the network.
 net_domain(platform_app)
 # Access bluetooth.

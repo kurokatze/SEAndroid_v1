@@ -1,0 +1,10 @@
+# By madcat, 2014-05-27
+#
+# Rules for privileged app domains.
+# These rules are inherited by any domain that includes privileged_app_domain().
+# These apps have full access to all app data files.
+# Also have full access to system resources.
+
+# Access to /data/data.
+allow privilegedappdomain app_data_file_type:dir create_dir_perms;
+allow privilegedappdomain app_data_file_type:notdevfile_class_set create_file_perms;

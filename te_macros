@@ -127,6 +127,13 @@ typeattribute $1 mlstrustedsubject;
 ')
 
 #####################################
+# privileged_app_domain(domain)
+# Allow permissions to all app data files.
+define(`privileged_app_domain', `
+typeattribute $1 privilegedappdomain;
+')
+
+#####################################
 # net_domain(domain)
 # Allow a base set of permissions required for network access.
 define(`net_domain', `

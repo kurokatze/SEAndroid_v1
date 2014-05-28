@@ -1,6 +1,7 @@
 # phone subsystem
 type radio, domain;
 app_domain(radio)
+privileged_app_domain(radio)
 net_domain(radio)
 bluetooth_domain(radio)
 binder_service(radio)

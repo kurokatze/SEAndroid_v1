@@ -1,6 +1,7 @@
 # bluetooth subsystem
 type bluetooth, domain;
 app_domain(bluetooth)
+privileged_app_domain(bluetooth)
 net_domain(bluetooth)
 
 # Data file accesses.

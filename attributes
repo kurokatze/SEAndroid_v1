@@ -74,7 +74,9 @@ attribute relabeltodomain;
 ################## START ##################
 # Modified by madcat, 2014-05-23
 ###########################################
+# type used for app data
+attribute app_data_file_type;
 
-attribute app_data_file_type
-
+# domain for privileged apps
+attribute privilegedappdomain;
 ################## END ####################
