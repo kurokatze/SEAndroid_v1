@@ -34,15 +34,29 @@
 # levelFrom=app or levelFrom=all is only supported for _app UIDs.
 # level may be used to specify a fixed level for any UID. 
 #
+
+# System services
 isSystemServer=true domain=system_server
 user=system domain=system_app type=system_data_file
 user=bluetooth domain=bluetooth type=bluetooth_data_file
 user=nfc domain=nfc type=nfc_data_file
 user=radio domain=radio type=radio_data_file
-user=_app domain=untrusted_app type=app_data_file
-user=_app seinfo=platform domain=platform_app type=app_data_file
-user=_app seinfo=shared domain=shared_app type=app_data_file
-user=_app seinfo=media domain=media_app type=app_data_file
-user=_app seinfo=release domain=release_app type=app_data_file
-user=_isolated domain=isolated_app
 user=shell domain=shell type=shell_data_file
+
+# Isolated services
+user=_isolated domain=isolated_app
+
+# Release apps
+user=_app seinfo=platform domain=platform_app type=release_app_data_file
+user=_app seinfo=shared domain=shared_app type=release_app_data_file
+user=_app seinfo=media domain=media_app type=release_app_data_file
+user=_app seinfo=release domain=release_app type=release_app_data_file
+
+# Untrusted apps
+user=_app seinfo=untrusted domain=untrusted_app type=untrusted_app_data_file
+
+# Trusted apps
+user=_app seinfo=trusted domain=trusted_app type=trusted_app_data_file
+
+# Default
+user=_app domain=unconfined_app type=unconfined_app_data_file

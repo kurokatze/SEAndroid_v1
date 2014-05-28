@@ -1,0 +1,31 @@
+# By madcat, 2014-05-28
+# Rules for trusted_apps, currently same rules to untrusted_apps
+
+type trusted_app, domain;
+app_domain(trusted_app)
+net_domain(trusted_app)
+bluetooth_domain(trusted_app)
+
+# allow trusted_app to access their own data
+allow trusted_app trusted_app_data_file:dir create_dir_perms;
+allow trusted_app trusted_app_data_file:notdevfile_class_set create_file_perms;
+allow trusted_app trusted_app_data_file:file rx_file_perms;
+
+allow trusted_app tun_device:chr_file rw_file_perms;
+
+# ASEC
+allow trusted_app asec_apk_file:dir { getattr };
+allow trusted_app asec_apk_file:file r_file_perms;
+# Execute libs in asec containers.
+allow trusted_app asec_public_file:file execute;
+
+# Allow the allocation and use of ptys
+# Used by: https://play.google.com/store/apps/details?id=jackpal.androidterm
+create_pty(trusted_app)
+
+# Used by Finsky / Android "Verify Apps" functionality when
+# running "adb install foo.apk".
+# TODO: Long term, we don't want apps probing into shell data files.
+# Figure out a way to remove these rules.
+allow trusted_app shell_data_file:file r_file_perms;
+allow trusted_app shell_data_file:dir r_dir_perms;

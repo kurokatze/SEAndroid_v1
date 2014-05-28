@@ -25,6 +25,10 @@ app_domain(untrusted_app)
 net_domain(untrusted_app)
 bluetooth_domain(untrusted_app)
 
+# allow untrusted_app to access their own data
+allow untrusted_app untrusted_app_data_file:dir create_dir_perms;
+allow untrusted_app untrusted_app_data_file:notdevfile_class_set create_file_perms;
+
 # Some apps ship with shared libraries and binaries that they write out
 # to their sandbox directory and then execute.
 ### START
