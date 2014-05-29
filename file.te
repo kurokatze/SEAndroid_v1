@@ -87,8 +87,8 @@ type trusted_app_data_file,		app_data_file_type, file_type, data_file_type;
 type untrusted_app_data_file,	app_data_file_type, file_type, data_file_type;
 type release_app_data_file,		app_data_file_type, file_type, data_file_type;
 
-typealias release_app_data_file platform_app_data_file;
-typealias untrusted_app_data_file download_file;
+typealias release_app_data_file alias platform_app_data_file;
+typealias untrusted_app_data_file alias download_file;
 
 #################################################
 # Compatibility with type name used in Android 4.3 and 4.4.
