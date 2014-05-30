@@ -29,3 +29,13 @@ create_pty(trusted_app)
 # Figure out a way to remove these rules.
 allow trusted_app shell_data_file:file r_file_perms;
 allow trusted_app shell_data_file:dir r_dir_perms;
+
+# Allow binder use between trusted_app apps
+binder_call(trusted_app, trusted_app)
+binder_call(trusted_app, media_app)
+binder_call(trusted_app, shared_app)
+binder_call(trusted_app, platform_app)
+binder_call(trusted_app, release_app)
+
+# When modifying data on sdcard, mark it with trusted app data
+type_transition tursted_app sdcard_internal:file trusted_app_data_file;

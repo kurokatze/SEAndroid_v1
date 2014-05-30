@@ -54,3 +54,6 @@ create_pty(untrusted_app)
 # Figure out a way to remove these rules.
 allow untrusted_app shell_data_file:file r_file_perms;
 allow untrusted_app shell_data_file:dir r_dir_perms;
+
+# Allow binder use between untrusted apps
+# binder_call(untrusted_app, untrusted_app)

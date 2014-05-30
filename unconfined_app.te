@@ -29,3 +29,6 @@ create_pty(unconfined_app)
 # Figure out a way to remove these rules.
 allow unconfined_app shell_data_file:file r_file_perms;
 allow unconfined_app shell_data_file:dir r_dir_perms;
+
+# Allow binder use between unconfined_app apps
+binder_call(unconfined_app, unconfined_app)

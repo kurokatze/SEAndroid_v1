@@ -43,6 +43,9 @@ user=nfc domain=nfc type=nfc_data_file
 user=radio domain=radio type=radio_data_file
 user=shell domain=shell type=shell_data_file
 
+# Default
+user=_app domain=unconfined_app type=unconfined_app_data_file
+
 # Isolated services
 user=_isolated domain=isolated_app
 
@@ -58,5 +61,3 @@ user=_app seinfo=untrusted domain=untrusted_app type=untrusted_app_data_file
 # Trusted apps
 user=_app seinfo=trusted domain=trusted_app type=trusted_app_data_file
 
-# Default
-user=_app domain=unconfined_app type=unconfined_app_data_file

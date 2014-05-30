@@ -8,3 +8,6 @@
 # Access to /data/data.
 allow privilegedappdomain app_data_file_type:dir create_dir_perms;
 allow privilegedappdomain app_data_file_type:notdevfile_class_set create_file_perms;
+
+# Perform binder IPC to other apps
+binder_call(privilegedappdomain, appdomain)
