@@ -90,7 +90,7 @@ binder_use(appdomain)
 # Perform binder IPC to binder services.
 binder_call(appdomain, binderservicedomain)
 # Perform binder IPC to other apps.
-binder_call(appdomain, appdomain)
+# binder_call(appdomain, appdomain)
 
 # Already connected, unnamed sockets being passed over some other IPC
 # hence no sock_file or connectto permission. This appears to be how
